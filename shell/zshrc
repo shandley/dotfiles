@@ -1,0 +1,72 @@
+# GNU tools — use Linux-compatible versions instead of BSD
+export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/gnu-tar/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/gawk/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+
+# GNU man pages
+export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:$MANPATH"
+
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+alias python=python3
+alias pip="python3 -m pip"
+
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# cargo
+export CARGO_TARGET_DIR="$HOME/.cargo/target"
+export PATH="$PATH:$HOME/.cargo/target/release"
+
+# History
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000                # Lines kept in memory per session
+SAVEHIST=50000                # Lines saved to file
+setopt EXTENDED_HISTORY       # Save timestamp and duration with each entry
+setopt HIST_IGNORE_ALL_DUPS   # Remove older duplicate when a new duplicate is added
+setopt HIST_IGNORE_SPACE      # Don't save commands starting with a space (useful for secrets)
+setopt HIST_REDUCE_BLANKS     # Clean up extra whitespace
+setopt SHARE_HISTORY          # Share history across all open terminal sessions in real-time
+setopt INC_APPEND_HISTORY     # Write to history file immediately, not just on shell exit
+
+# Tab completion
+autoload -Uz compinit && compinit
+zstyle ':completion:*' menu select                    # Arrow-key driven menu for tab completion
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'   # Case-insensitive tab completion
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}  # Colored completion matches
+
+# Directory navigation
+setopt AUTO_CD            # Type a directory name to cd into it
+setopt AUTO_PUSHD         # cd pushes to directory stack automatically
+setopt PUSHD_SILENT       # Don't print the stack after pushd/popd
+DIRSTACKSIZE=20           # Keep 20 dirs in the stack — use "cd -<TAB>" to pick from recent dirs
+
+# Word navigation — Option+Arrow to jump by word in terminal
+bindkey "^[[1;3C" forward-word      # Option+Right
+bindkey "^[[1;3D" backward-word     # Option+Left
+bindkey "^[[3~" delete-char         # Fix Delete key
+
+# Modern CLI tools (faster alternatives)
+alias ls="eza"
+alias ll="eza -lAFh"
+alias find="fd"
+alias cat="bat --plain"
+alias gs="git status"
+alias gd="git diff"
+alias gl="git log --oneline -20"
+alias c="cd ~/Code"
+
+# Quick project switcher — usage: "p projectname" to cd into ~/Code/*/projectname
+p() { cd ~/Code/**/$1(D[1]) 2>/dev/null || echo "not found: $1" }
+
+# fzf — fuzzy finder
+source <(fzf --zsh)

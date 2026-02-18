@@ -1,0 +1,1 @@
+Run the test suite for files changed in the current branch. Use `git diff --name-only main` to find changed files, then determine the appropriate test command for the project (pytest, vitest, cargo test, etc.) and run tests relevant to the changed files. Report results concisely. $ARGUMENTS

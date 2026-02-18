@@ -1,0 +1,1 @@
+Review the current project for dead code, unused imports, unused dependencies, and files that can be removed. Report findings but do not make changes unless asked. $ARGUMENTS

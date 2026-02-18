@@ -1,0 +1,1 @@
+Read all files changed in the current git branch using `git diff --name-only main`. Summarize the current state of work: what has been done, what remains, and any issues. $ARGUMENTS

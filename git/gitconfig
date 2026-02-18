@@ -1,0 +1,19 @@
+[credential]
+	helper = osxkeychain
+[user]
+	name = Scott Handley
+	email = handley.scott@gmail.com
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[diff]
+	algorithm = histogram
+[rebase]
+	autoStash = true
+[rerere]
+	enabled = true
