@@ -4,10 +4,39 @@ Host *
     ControlMaster auto
     ControlPath ~/.ssh/sockets/%r@%h-%p
     ControlPersist 600
-    ServerAliveInterval 60
-    ServerAliveCountMax 3
+    ServerAliveInterval 30
+    ServerAliveCountMax 6
 
 Host github.com
     HostName github.com
     User git
     IdentityFile ~/.ssh/id_ed25519
+
+# WashU HTCF (bioinformatics cluster, SLURM)
+# Auth: SSH key only, no VPN, no DUO
+Host htcf
+    HostName login.htcf.wustl.edu
+    User shandley
+    IdentityFile ~/.ssh/id_ed25519
+    ControlPersist 8h
+
+# WashU RIS Compute2 (H100 GPU cluster, SLURM)
+# Auth: SSH key via macOS Keychain. Cisco VPN required (DUO via browser at VPN connect).
+# Login nodes: c2-login-002 and c2-login-003 are up (c2-login-001 is DOWN as of 2026-06-09)
+Host ris
+    HostName c2-login-003.ris.wustl.edu
+    User shandley
+    IdentityFile ~/.ssh/id_ed25519
+    ControlPersist 8h
+
+Host ris-2
+    HostName c2-login-002.ris.wustl.edu
+    User shandley
+    IdentityFile ~/.ssh/id_ed25519
+    ControlPersist 8h
+
+Host ris-3
+    HostName c2-login-003.ris.wustl.edu
+    User shandley
+    IdentityFile ~/.ssh/id_ed25519
+    ControlPersist 8h

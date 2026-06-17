@@ -1,6 +1,7 @@
-# GNU tools — use Linux-compatible versions instead of BSD
-export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
+# GNU tools — selected Linux-compatible replacements
+path=(${path:#/opt/homebrew/opt/coreutils/libexec/gnubin})
+path=(${path:#/opt/homebrew/opt/findutils/libexec/gnubin})
+export PATH="${(j/:/)path}"
 export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
 export PATH="/opt/homebrew/opt/gnu-tar/libexec/gnubin:$PATH"
 export PATH="/opt/homebrew/opt/gawk/libexec/gnubin:$PATH"
@@ -14,18 +15,12 @@ export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 alias python=python3
 alias pip="python3 -m pip"
 
-export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
-
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# cargo
-export CARGO_TARGET_DIR="$HOME/.cargo/target"
-export PATH="$PATH:$HOME/.cargo/target/release"
 
 # History
 HISTFILE="$HOME/.zsh_history"
@@ -38,8 +33,13 @@ setopt HIST_REDUCE_BLANKS     # Clean up extra whitespace
 setopt SHARE_HISTORY          # Share history across all open terminal sessions in real-time
 setopt INC_APPEND_HISTORY     # Write to history file immediately, not just on shell exit
 
-# Tab completion
-autoload -Uz compinit && compinit
+# Tab completion — cached, rebuilds once per day
+autoload -Uz compinit
+if [[ -f ~/.zcompdump && $(date +'%j') == $(stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null) ]]; then
+  compinit -C
+else
+  compinit
+fi
 zstyle ':completion:*' menu select                    # Arrow-key driven menu for tab completion
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'   # Case-insensitive tab completion
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}  # Colored completion matches
@@ -55,10 +55,10 @@ bindkey "^[[1;3C" forward-word      # Option+Right
 bindkey "^[[1;3D" backward-word     # Option+Left
 bindkey "^[[3~" delete-char         # Fix Delete key
 
-# Modern CLI tools (faster alternatives)
-alias ls="eza"
-alias ll="eza -lAFh"
-alias find="fd"
+# Aliases
+alias ls="ls -G"
+alias ll="ls -lAFhG"
+alias f="fd"                   # fd as 'f', not overriding 'find' (scripts depend on find syntax)
 alias cat="bat --plain"
 alias gs="git status"
 alias gd="git diff"
@@ -68,5 +68,19 @@ alias c="cd ~/Code"
 # Quick project switcher — usage: "p projectname" to cd into ~/Code/*/projectname
 p() { cd ~/Code/**/$1(D[1]) 2>/dev/null || echo "not found: $1" }
 
-# fzf — fuzzy finder
+# fzf — fuzzy finder with smart defaults
 source <(fzf --zsh)
+export FZF_DEFAULT_OPTS="--height=40% --layout=reverse"
+export FZF_CTRL_T_OPTS="--walker-skip .git,node_modules,target,.venv --preview 'bat -n --color=always --line-range=:100 {} 2>/dev/null || ls {}'"
+export FZF_ALT_C_OPTS="--walker-skip .git,node_modules,target,.venv --preview 'ls {}'"
+
+# zoxide — smarter cd that learns your frequent directories
+eval "$(zoxide init zsh)"
+
+# Local, untracked settings (secrets, machine-specific) — keep out of the dotfiles repo
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+# Plugins (keep at end of file)
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
